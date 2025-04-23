@@ -14,7 +14,7 @@ RPN_FILE = r"D:\KOEL\ICSS\Deployment1\icss-backend\ProcessedData\RPN.xlsx"
 rpn_data = pd.read_excel('ProcessedData/RPN.xlsx')
 known_components = rpn_data["Component"].dropna().unique().tolist()
 
-ef extract_component(observation):
+def extract_component(observation):
     try:
         corrected = TextBlob(observation).correct()
         corrected_str = str(corrected)
