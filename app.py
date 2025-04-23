@@ -36,9 +36,6 @@ def extract_component(obs):
             highest_score = score
     return best_match if best_match else "Unknown"
 
-# Disable ThreadPoolExecutor
-df["Component"] = df["Observation"].apply(extract_component)
-
 def get_rpn_values(component):
     row = rpn_data[rpn_data["Component"] == component]
     if not row.empty:
