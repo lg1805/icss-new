@@ -4,88 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICSS Web App</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #d9f2e6;
-            text-align: center;
-            padding: 50px;
-        }
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        img {
-            width: 100%;
-            max-width: 700px; /* Increased max-width for larger image */
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
-        p {
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        form {
-            width: 100%;
-        }
-        .file-input,
-        .month-input {
-            margin: 15px 0;
-        }
-        input[type="file"],
-        select {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 80%;
-            margin: 0 auto;
-            display: block;
-        }
-        label {
-            font-size: 16px;
-            color: #333;
-            display: block;
-            margin-bottom: 5px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 80%;
-            margin: 20px auto 0;
-            display: block;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .error-message {
-            color: red;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-        .success-message {
-            color: green;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-    </style>
+   <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #d9f2e6;
+        text-align: center;
+        padding: 50px;
+    }
+    .container {
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    img {
+        width: 100%;
+        max-width: 600px; /* ⬅️ Image now up to 600px */
+        display: block;
+        margin: 20px auto;
+        border-radius: 10px;
+    }
+    h2 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+    p {
+        font-size: 16px;
+        color: #555;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .file-input,
+    .month-input {
+        width: 80%;
+        margin: 20px 0;
+        text-align: left;
+    }
+    input[type="file"],
+    select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    label {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 5px;
+        display: block;
+    }
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 80%;
+        margin: 20px auto;
+        display: block;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .success-message {
+        color: green;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+</style>
 </head>
 <body>
     <div class="container">
