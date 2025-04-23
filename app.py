@@ -24,27 +24,20 @@ known_components = rpn_data["Component"].dropna().unique().tolist()
 # Use ThreadPoolExecutor for parallel execution
 executor = ThreadPoolExecutor(max_workers=4)  # You can adjust based on available CPU cores
 
-def extract_component(observation):
-    try:
-        # Step 1: Correct spelling using TextBlob
-        corrected = TextBlob(observation).correct()
-        corrected_str = str(corrected)
+# Avoid TextBlob for now
+def extract_component(obs):
+    obs = str(obs).strip()
+    best_match = None
+    highest_score = 0
+    for comp in known_components:
+        score = fuzz.partial_ratio(comp.lower(), obs.lower())
+        if score > highest_score and score >= 80:
+            best_match = comp
+            highest_score = score
+    return best_match if best_match else "Unknown"
 
-        # Step 2: Fuzzy match with known components
-        best_match = None
-        highest_score = 0
-        threshold = 80  # Adjust this threshold as needed
-
-        for component in known_components:
-            score = fuzz.partial_ratio(component.lower(), corrected_str.lower())
-            if score > highest_score and score >= threshold:
-                highest_score = score
-                best_match = component
-
-        return best_match if best_match else "Unknown"
-    except Exception as e:
-        print(f"Error processing observation: {observation}, Error: {e}")
-        return "Unknown"
+# Disable ThreadPoolExecutor
+df["Component"] = df["Observation"].apply(extract_component)
 
 def get_rpn_values(component):
     row = rpn_data[rpn_data["Component"] == component]
