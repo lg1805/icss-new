@@ -19,12 +19,14 @@ RPN_FILE = r"D:\KOEL\ICSS\Deployment\icss-backend\ProcessedData\RPN.xlsx"
 rpn_data = pd.read_excel('ProcessedData/RPN.xlsx')
 known_components = rpn_data["Component"].dropna().unique().tolist()
 
-def extract_component(observation, threshold=80):
-    if pd.notna(observation):
-        # Step 1: Spell correction on the TextBlob, not on the string
-        blob      = TextBlob(str(observation))
-        corrected = blob.correct()          # <— correct on the blob
+threshold = 80  # Fuzzy matching threshold
 
+def extract_component(observation):
+    # Make sure the observation is a string first
+    if isinstance(observation, str):
+        # Create a TextBlob object and correct any spelling mistakes
+        corrected = TextBlob(observation).correct()
+        
         # Step 2: Fuzzy match with known components
         best_match   = None
         highest_score = 0
@@ -33,10 +35,10 @@ def extract_component(observation, threshold=80):
             if score > highest_score and score >= threshold:
                 highest_score = score
                 best_match    = component
+                
         return best_match or "Unknown"
-    return "Unknown"
-
-
+    
+    return "Unknown"  # If observation is not a string, return "Unknown"
 
 def get_rpn_values(component):
     row = rpn_data[rpn_data["Component"] == component]
