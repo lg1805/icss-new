@@ -22,7 +22,9 @@ threshold = 80  # Fuzzy matching threshold
 # Function to extract components based on fuzzy matching
 def extract_component(observation):
     try:
-        corrected = str(TextBlob(observation).correct())  # Fixes spelling
+        corrected = TextBlob(observation).correct()
+        corrected_str = str(corrected)
+  # Fixes spelling
         # Your actual keyword/component matching logic goes here using `corrected`
         return corrected  # Or return matched component if you have logic
     except Exception as e:
