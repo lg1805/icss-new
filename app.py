@@ -15,6 +15,10 @@ RPN_FILE = os.path.join(os.path.dirname(__file__), 'ProcessedData', 'RPN.xlsx')
 if not os.path.exists(RPN_FILE):
     raise FileNotFoundError(f"RPN file not found at {RPN_FILE}")
 
+# Load the RPN data file here
+rpn_data = pd.read_excel(RPN_FILE)
+
+# Now it's safe to access 'rpn_data'
 known_components = rpn_data["Component"].dropna().unique().tolist()
 
 # Use ThreadPoolExecutor for parallel execution
@@ -131,7 +135,7 @@ def upload_file():
 
         # Step 3: Run NLP and matching in parallel using ThreadPoolExecutor
         df["Component"] = list(executor.map(extract_component, df["Observation"]))
-        
+
         # Step 4: Get RPN values and assign priority in parallel
         rpn_values = list(executor.map(get_rpn_values, df["Component"]))
         df[["Severity (S)", "Occurrence (O)", "Detection (D)"]] = pd.DataFrame(rpn_values, index=df.index)
