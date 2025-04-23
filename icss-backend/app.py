@@ -6,7 +6,12 @@ import xlsxwriter
 from textblob import TextBlob
 from rapidfuzz import fuzz
 
-app = Flask(__name__)
+app = app = Flask(
+    __name__,
+    template_folder="templates",   # now at project root
+    static_folder="static"         # now at project root
+)
+
 UPLOAD_FOLDER = 'uploads/processed/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
