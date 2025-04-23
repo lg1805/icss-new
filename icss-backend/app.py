@@ -21,10 +21,14 @@ threshold = 80  # Fuzzy matching threshold
 
 # Function to extract components based on fuzzy matching
 def extract_component(observation):
-    if isinstance(observation, str):
-        # Create a TextBlob object and correct any spelling mistakes
-        ccorrected = str(TextBlob(observation).correct())
-        
+    try:
+        corrected = str(TextBlob(observation).correct())  # Fixes spelling
+        # Your actual keyword/component matching logic goes here using `corrected`
+        return corrected  # Or return matched component if you have logic
+    except Exception as e:
+        print(f"Error processing observation: {observation}, Error: {e}")
+        return observation  # Fallback to original
+
         best_match = None
         highest_score = 0
         for component in known_components:
