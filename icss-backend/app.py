@@ -23,7 +23,7 @@ threshold = 80  # Fuzzy matching threshold
 def extract_component(observation):
     if isinstance(observation, str):
         # Create a TextBlob object and correct any spelling mistakes
-        corrected = TextBlob(observation).correct()
+        ccorrected = str(TextBlob(observation).correct())
         
         best_match = None
         highest_score = 0
