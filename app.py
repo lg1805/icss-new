@@ -11,8 +11,10 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/processed/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-RPN_FILE = r"D:\KOEL\ICSS\Deployment1\icss-backend\ProcessedData\RPN.xlsx"
-rpn_data = pd.read_excel(RPN_FILE)
+RPN_FILE = os.path.join(os.path.dirname(__file__), 'ProcessedData', 'RPN.xlsx')
+if not os.path.exists(RPN_FILE):
+    raise FileNotFoundError(f"RPN file not found at {RPN_FILE}")
+
 known_components = rpn_data["Component"].dropna().unique().tolist()
 
 # Use ThreadPoolExecutor for parallel execution
