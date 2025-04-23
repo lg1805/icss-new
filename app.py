@@ -5,37 +5,40 @@ from datetime import datetime
 import xlsxwriter
 from textblob import TextBlob
 from rapidfuzz import fuzz
+from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/processed/'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 RPN_FILE = r"D:\KOEL\ICSS\Deployment1\icss-backend\ProcessedData\RPN.xlsx"
-rpn_data = pd.read_excel('ProcessedData/RPN.xlsx')
+rpn_data = pd.read_excel(RPN_FILE)
 known_components = rpn_data["Component"].dropna().unique().tolist()
+
+# Use ThreadPoolExecutor for parallel execution
+executor = ThreadPoolExecutor(max_workers=4)  # You can adjust based on available CPU cores
 
 def extract_component(observation):
     try:
+        # Step 1: Correct spelling using TextBlob
         corrected = TextBlob(observation).correct()
         corrected_str = str(corrected)
-  # Fixes spelling
-        # Your actual keyword/component matching logic goes here using `corrected`
-        return corrected  # Or return matched component if you have logic
-    except Exception as e:
-        print(f"Error processing observation: {observation}, Error: {e}")
-        return observation 
-        
+
         # Step 2: Fuzzy match with known components
         best_match = None
         highest_score = 0
+        threshold = 80  # Adjust this threshold as needed
+
         for component in known_components:
-            score = fuzz.partial_ratio(component.lower(), corrected.lower())
+            score = fuzz.partial_ratio(component.lower(), corrected_str.lower())
             if score > highest_score and score >= threshold:
                 highest_score = score
                 best_match = component
-        return best_match if best_match else "Unknown"
-    return "Unknown"
 
+        return best_match if best_match else "Unknown"
+    except Exception as e:
+        print(f"Error processing observation: {observation}, Error: {e}")
+        return "Unknown"
 
 def get_rpn_values(component):
     row = rpn_data[rpn_data["Component"] == component]
@@ -44,7 +47,7 @@ def get_rpn_values(component):
         occurrence = int(row["Occurrence (O)"].values[0])
         detection = int(row["Detection (D)"].values[0])
         return severity, occurrence, detection
-    return 1, 1, 10
+    return 1, 1, 10  # Default values if no match
 
 def determine_priority(rpn):
     if rpn >= 200:
@@ -124,11 +127,16 @@ def upload_file():
             else:
                 return None
 
-        df["Component"] = df["Observation"].apply(extract_component)
-        df[["Severity (S)", "Occurrence (O)", "Detection (D)"]] = df["Component"].apply(lambda comp: pd.Series(get_rpn_values(comp)))
+        # Step 3: Run NLP and matching in parallel using ThreadPoolExecutor
+        df["Component"] = list(executor.map(extract_component, df["Observation"]))
+        
+        # Step 4: Get RPN values and assign priority in parallel
+        rpn_values = list(executor.map(get_rpn_values, df["Component"]))
+        df[["Severity (S)", "Occurrence (O)", "Detection (D)"]] = pd.DataFrame(rpn_values, index=df.index)
         df["RPN"] = df["Severity (S)"] * df["Occurrence (O)"] * df["Detection (D)"]
         df["Priority"] = df["RPN"].apply(determine_priority)
 
+        # Step 5: Segregate and sort the Data
         spn_df = df[df["Observation"].str.contains("spn", case=False, na=False)]
         non_spn_df = df[~df["Observation"].str.contains("spn", case=False, na=False)]
 
@@ -136,6 +144,7 @@ def upload_file():
         spn_df = spn_df.sort_values(by="Priority", key=lambda x: x.map(priority_order))
         non_spn_df = non_spn_df.sort_values(by="Priority", key=lambda x: x.map(priority_order))
 
+        # Generate Processed Excel File
         processed_filepath = os.path.join(UPLOAD_FOLDER, 'processed_' + file.filename)
 
         spn_df = spn_df.fillna("")
@@ -162,7 +171,7 @@ def upload_file():
 
         return send_file(processed_filepath, as_attachment=True)
 
-import os       
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
 
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
