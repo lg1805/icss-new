@@ -14,11 +14,17 @@ RPN_FILE = r"D:\KOEL\ICSS\Deployment1\icss-backend\ProcessedData\RPN.xlsx"
 rpn_data = pd.read_excel('ProcessedData/RPN.xlsx')
 known_components = rpn_data["Component"].dropna().unique().tolist()
 
-def extract_component(observation, threshold=80):
-    if pd.notna(observation):
-        # Step 1: Spell correction
-        corrected = str(TextBlob(observation)).correct()
-
+ef extract_component(observation):
+    try:
+        corrected = TextBlob(observation).correct()
+        corrected_str = str(corrected)
+  # Fixes spelling
+        # Your actual keyword/component matching logic goes here using `corrected`
+        return corrected  # Or return matched component if you have logic
+    except Exception as e:
+        print(f"Error processing observation: {observation}, Error: {e}")
+        return observation 
+        
         # Step 2: Fuzzy match with known components
         best_match = None
         highest_score = 0
