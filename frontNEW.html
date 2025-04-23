@@ -12,61 +12,65 @@
             padding: 50px;
         }
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: auto;
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         img {
             width: 100%;
-            max-width: 1000px; /* Increased max-width for larger image */
-            display: block;
-            margin: 10px auto;
+            max-width: 700px; /* Increased max-width for larger image */
             border-radius: 10px;
+            margin-bottom: 20px;
         }
         h2 {
             color: #333;
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 15px;
         }
         p {
-            font-size: 16px;
+            font-size: 18px;
             color: #555;
+            margin-bottom: 20px;
+        }
+        form {
+            width: 100%;
         }
         .file-input,
         .month-input {
-            margin: 20px 0;
-            text-align: center; /* Center-align input fields */
+            margin: 15px 0;
         }
         input[type="file"],
         select {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            width: 80%; /* Reduced width for better alignment */
+            width: 80%;
+            margin: 0 auto;
             display: block;
-            margin: 10px auto; /* Center-align inputs */
         }
         label {
             font-size: 16px;
             color: #333;
             display: block;
-            text-align: center;
             margin-bottom: 5px;
         }
         button {
             background-color: #007bff;
             color: white;
-            padding: 12px 20px;
+            padding: 14px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            width: 80%; /* Center button */
+            width: 80%;
+            margin: 20px auto 0;
             display: block;
-            margin: 20px auto; /* Center-align button */
         }
         button:hover {
             background-color: #0056b3;
@@ -74,12 +78,12 @@
         .error-message {
             color: red;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         .success-message {
             color: green;
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -90,7 +94,6 @@
         <h2>ICSS for CPCBIV+ Infant Care Meet</h2>
         <p>Upload Complaints Excel Sheet</p>
 
-        <!-- Form for file upload and month selection -->
         <form action="/upload" method="post" enctype="multipart/form-data">
             <div class="file-input">
                 <input type="file" name="complaint_file" required>
@@ -118,7 +121,6 @@
             <button type="submit">Process and Download</button>
         </form>
 
-        <!-- Display error or success messages -->
         {% if error %}
             <p class="error-message">{{ error }}</p>
         {% endif %}
