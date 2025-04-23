@@ -21,19 +21,21 @@ known_components = rpn_data["Component"].dropna().unique().tolist()
 
 def extract_component(observation, threshold=80):
     if pd.notna(observation):
-        # Step 1: Spell correction
-        corrected = str(TextBlob(observation)).correct()
+        # Step 1: Spell correction on the TextBlob, not on the string
+        blob      = TextBlob(str(observation))
+        corrected = blob.correct()          # <— correct on the blob
 
         # Step 2: Fuzzy match with known components
-        best_match = None
+        best_match   = None
         highest_score = 0
         for component in known_components:
-            score = fuzz.partial_ratio(component.lower(), corrected.lower())
+            score = fuzz.partial_ratio(component.lower(), str(corrected).lower())
             if score > highest_score and score >= threshold:
                 highest_score = score
-                best_match = component
-        return best_match if best_match else "Unknown"
+                best_match    = component
+        return best_match or "Unknown"
     return "Unknown"
+
 
 
 def get_rpn_values(component):
