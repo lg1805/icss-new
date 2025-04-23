@@ -1,161 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ICSS Web App</title>
-  <style>
-    /* overall page */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #d9f2e6;
-      margin: 0;
-      padding: 50px 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    /* white card */
-    .container {
-      width: 100%;
-      max-width: 1000px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    /* BIG logo */
-    #hero-image {
-      width: 100%;
-      max-width: 800px;        /* up to 800px wide */
-      height: auto;
-      margin: 0 auto 30px;
-      border-radius: 12px;
-      display: block;
-    }
-
-    h2 {
-      font-size: 28px;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    p.subtitle {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 30px;
-    }
-
-    /* form layout */
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .file-input,
-    .month-input {
-      width: 100%;
-      max-width: 600px;
-      margin: 15px 0;
-      text-align: center;       /* center label + input */
-    }
-
-    label {
-      display: block;
-      font-size: 16px;
-      color: #333;
-      margin-bottom: 6px;
-    }
-
-    input[type="file"],
-    select {
-      width: 80%;
-      max-width: 400px;
-      padding: 10px;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-      margin: 0 auto;           /* center the control */
-    }
-
-    /* big blue button */
-    button {
-      width: 80%;
-      max-width: 400px;
-      padding: 14px;
-      margin: 30px auto 0;
-      font-size: 16px;
-      color: #fff;
-      background-color: #007bff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color .2s;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    .error-message {
-      color: #d00;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .success-message {
-      color: #080;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICSS Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d9f2e6;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        img {
+            width: 100%;
+            max-width: 500px;
+            display: block;
+            margin: 10px auto;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+        }
+        .file-input,
+        .month-input {
+            margin: 20px 0;
+        }
+        input[type="file"],
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <!-- BIG, centered image -->
-    <img id="hero-image" src="static/logo.png" alt="Priority Image">
+    <div class="container">
+        <img src="static/logo.png" alt="Priority Image">
 
-    <h2>ICSS for Complaint Classification</h2>
-    <p class="subtitle">Upload your complaint Excel sheet and get the processed results.</p>
+        <h2>ICSS for CPCBIV+ Infant Care Meet</h2>
+        <p>Upload Complaints Excel Sheet</p>
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <div class="file-input">
-        <label for="complaint_file">Choose Complaint File</label>
-        <input type="file" id="complaint_file" name="complaint_file" accept=".xlsx" required>
-        <small>Only <code>.xlsx</code> format is accepted.</small>
-      </div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="file-input">
+                <input type="file" name="complaint_file" required>
+            </div>
 
-      <div class="month-input">
-        <label for="month_hint">Select Month (for date correction)</label>
-        <select name="month_hint" id="month_hint" required>
-          <option value="">--Select Month--</option>
-          <option value="jan">January</option>
-          <option value="feb">February</option>
-          <option value="mar">March</option>
-          <option value="apr">April</option>
-          <option value="may">May</option>
-          <option value="jun">June</option>
-          <option value="jul">July</option>
-          <option value="aug">August</option>
-          <option value="sep">September</option>
-          <option value="oct">October</option>
-          <option value="nov">November</option>
-          <option value="dec">December</option>
-        </select>
-      </div>
+            <div class="month-input">
+                <label for="month_hint">Select Month (for date correction):</label>
+                <select name="month_hint" id="month_hint" required>
+                    <option value="">--Select Month--</option>
+                    <option value="jan">January</option>
+                    <option value="feb">February</option>
+                    <option value="mar">March</option>
+                    <option value="apr">April</option>
+                    <option value="may">May</option>
+                    <option value="jun">June</option>
+                    <option value="jul">July</option>
+                    <option value="aug">August</option>
+                    <option value="sep">September</option>
+                    <option value="oct">October</option>
+                    <option value="nov">November</option>
+                    <option value="dec">December</option>
+                </select>
+            </div>
 
-      <button type="submit">Process and Download</button>
-    </form>
+            <button type="submit">Process and Download</button>
+        </form>
 
-    {% if error %}
-      <p class="error-message">{{ error }}</p>
-    {% endif %}
-    {% if success_message %}
-      <p class="success-message">{{ success_message }}</p>
-    {% endif %}
-  </div>
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+        {% if success_message %}
+            <p class="success-message">{{ success_message }}</p>
+        {% endif %}
+    </div>
 </body>
 </html>
