@@ -3,9 +3,11 @@ import pandas as pd
 import os
 from datetime import datetime
 import xlsxwriter
-from textblob import TextBlob
 from rapidfuzz import fuzz
 from concurrent.futures import ThreadPoolExecutor
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/processed/'
@@ -24,7 +26,6 @@ known_components = rpn_data["Component"].dropna().unique().tolist()
 # Use ThreadPoolExecutor for parallel execution
 executor = ThreadPoolExecutor(max_workers=4)  # You can adjust based on available CPU cores
 
-# Avoid TextBlob for now
 def extract_component(obs):
     obs = str(obs).strip()
     best_match = None
@@ -79,6 +80,41 @@ def format_creation_date(date_str, month_hint):
         return None, None
 
     return None, None
+
+# Function to send email alert for RED-highlighted rows
+def send_email_alert(red_rows, recipient_email):
+    sender_email = "lakshyarubi.gmail.com"
+    sender_password = "selr fdih wlkm wufg"
+    
+    # Create email message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = "Incident Alert: RED Highlighted Cases"
+
+    # Create the email body
+    body = "Dear User,\n\nPlease find the details of the RED-highlighted cases below:\n\n"
+    
+    # Add the RED-highlighted rows to the body
+    body += red_rows.to_string(index=False)  # Convert DataFrame to string representation
+    
+    # Attach the body to the email
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Connect to Gmail's SMTP server
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(sender_email, sender_password)
+            # Send email
+            server.sendmail(sender_email, recipient_email, msg.as_string())
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+# Function to filter RED-highlighted rows
+def filter_red_rows(df):
+    red_rows = df[df["Incident Status"].str.lower().str.contains("red")]
+    return red_rows
 
 @app.route('/')
 def index():
@@ -165,9 +201,17 @@ def upload_file():
                         fmt = workbook.add_format({'bg_color': color})
                         worksheet.write(idx + 1, sheet_df.columns.get_loc("Incident Id"), sheet_df.loc[row_idx, "Incident Id"], fmt)
 
+        # After generating the processed Excel, send email for RED-highlighted rows
+        red_rows = filter_red_rows(df)
+
+        if not red_rows.empty:
+            recipient_email = "lakshyarubi.gmail.com"  # Replace with the actual recipient's email
+            send_email_alert(red_rows, recipient_email)
+
         return send_file(processed_filepath, as_attachment=True)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
