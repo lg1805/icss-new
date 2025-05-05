@@ -149,17 +149,51 @@ def upload_file():
         non_spn = non_spn.sort_values(by='Priority', key=lambda x: x.map(order_map))
 
         out_path = os.path.join(UPLOAD_FOLDER, 'processed_' + file.filename)
-        with pd.ExcelWriter(out_path, engine='xlsxwriter', engine_kwargs={'options': {'nan_inf_to_errors': True}}) as writer:
-            for name, sheet in [('SPN', spn_df), ('Non-SPN', non_spn)]:
-                sheet.fillna('', inplace=True)
-                sheet.to_excel(writer, sheet_name=name, index=False)
-                wb = writer.book
-                ws = writer.sheets[name]
-                green = wb.add_format({'bg_color': '#C6EFCE'})
-                for i, idx in enumerate(sheet.index):
-                    status = str(sheet.at[idx, 'Incident Status']).lower()
-                    if 'closed' in status or 'complete' in status:
-                        ws.write(i + 1, sheet.columns.get_loc('Incident Status'), sheet.at[idx, 'Incident Status'], green)
+      with pd.ExcelWriter(out_path, engine='xlsxwriter', engine_kwargs={'options': {'nan_inf_to_errors': True}}) as writer:
+    for name, sheet in [('SPN', spn_df), ('Non-SPN', non_spn)]:
+        sheet.fillna('', inplace=True)
+        sheet.to_excel(writer, sheet_name=name, index=False)
+        wb = writer.book
+        ws = writer.sheets[name]
+
+        # Define color formats
+        green = wb.add_format({'bg_color': '#C6EFCE'})      # Green
+        blue = wb.add_format({'bg_color': '#9DC3E6'})       # Blue
+        yellow = wb.add_format({'bg_color': '#FFF2CC'})     # Yellow
+        pink = wb.add_format({'bg_color': '#E4A1C6'})       # Dark Pink
+        red = wb.add_format({'bg_color': '#F4CCCC'})        # Red
+        gray = wb.add_format({'bg_color': '#D9D9D9'})       # Light Gray
+
+        # Get column indices
+        col_idx_id = sheet.columns.get_loc('Incident Id')
+        col_idx_status = sheet.columns.get_loc('Incident Status')
+        col_idx_days = sheet.columns.get_loc('Days Elapsed')
+
+        for i, idx in enumerate(sheet.index):
+            status = str(sheet.iat[i, col_idx_status]).strip().lower()
+            days_elapsed = sheet.iat[i, col_idx_days]
+
+            # Determine format
+            cell_format = None
+
+            if status in ['closed', 'completed']:
+                cell_format = green
+            elif status in ['open', 'pending']:
+                if isinstance(days_elapsed, (int, float)):
+                    if days_elapsed == 0:
+                        cell_format = gray
+                    elif days_elapsed == 1:
+                        cell_format = blue
+                    elif days_elapsed == 2:
+                        cell_format = yellow
+                    elif days_elapsed == 3:
+                        cell_format = pink
+                    elif days_elapsed > 3:
+                        cell_format = red
+
+            # Apply format to Incident Id cell
+            if cell_format:
+                ws.write(i + 1, col_idx_id, sheet.iat[i, col_idx_id], cell_format)
 
         # Alert logic
         alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
