@@ -77,7 +77,7 @@ def send_alert_email(df_filtered, emission_category):
       <body style="font-family:Arial,sans-serif;">
         <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
         <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
-        <p>Emissions Category: {emission_category}</p>
+        f"<p><b>Emissions Category:</b> {emission_category}</p>"
         {html_table}
         <p>Regards,<br/>ICSS Team</p>
       </body>
