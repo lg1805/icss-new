@@ -67,11 +67,12 @@ def format_creation_date(date_str, month_hint):
 
 def send_alert_email(df_filtered, emission_category):
     if df_filtered.empty:
-        return
+        return  # No data to send in the email, so exit the function
 
     sender_email = "lakshyarubi@gmail.com"
     receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
-    # Customize this based on emission category
+
+    # Adjust receiver email based on emission category
     if emission_category == 'CPCBII':
         receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
     elif emission_category == 'CPCBIV+':
@@ -83,7 +84,7 @@ def send_alert_email(df_filtered, emission_category):
     elif emission_category == 'BSV':
         receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
 
-    html_table = df_filtered.to_html(index=False)
+    html_table = df_filtered.to_html(index=False)  # Convert DataFrame to HTML table
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
@@ -105,8 +106,8 @@ def send_alert_email(df_filtered, emission_category):
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, "app_password")  # Use App Password here
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+            server.login(sender_email, "app_password")  # Use App Password here if using Gmail with 2FA
+            server.sendmail(sender_email, receiver_email, msg.as_string())  # Send the email
             print("Email alert sent successfully.")
     except Exception as e:
         print(f"Failed to send email: {e}")
@@ -222,4 +223,5 @@ def upload_file():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
 
