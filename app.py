@@ -205,8 +205,11 @@ def upload_file():
                                 cell_format = red
 
                     # Apply format to Incident Id cell
+                    # Apply format to the full row
                     if cell_format:
-                        ws.write(i + 1, col_idx_id, sheet.iat[i, col_idx_id], cell_format)
+                      for col in range(len(sheet.columns)):
+                        ws.write(i + 1, col, sheet.iat[i, col], cell_format)
+
 
             # Send email for alerts
             alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
