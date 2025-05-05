@@ -87,7 +87,7 @@ def send_alert_email(df_filtered, emission_category):
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, "app_password")  # Replace with app password
+            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with app password
             server.sendmail(sender_email, receiver_email, msg.as_string())
             print("Email alert sent successfully.")
     except Exception as e:
@@ -183,8 +183,9 @@ def upload_file():
                         elif days > 3:
                             fmt = colors['red']
                     if fmt:
-                        for col in range(len(sheet.columns)):
-                            ws.write(i + 1, col, sheet.iat[i, col], fmt)
+                        incident_col = sheet.columns.get_loc('Incident Id')
+                        ws.write(i + 1, incident_col, sheet.iat[i, incident_col], fmt)
+
 
         # Email Alerts
         alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
