@@ -65,35 +65,47 @@ def format_creation_date(date_str, month_hint):
         return None, None
     return None, None
 
-def send_alert_email(df_filtered):
+def send_alert_email(df_filtered, emission_category):
     if df_filtered.empty:
         return
+
     sender_email = "lakshyarubi@gmail.com"
     receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
-    receiver_email = "Sameer.kambli@kirloskar.com"
-    app_password = "selr fdih wlkm wufg"  # Use App Password
+    # Customize this based on emission category
+    if emission_category == 'CPCBII':
+        receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
+    elif emission_category == 'CPCBIV+':
+        receiver_email = "sameer.kambli@kirloskar.com"
+    elif emission_category == 'BSII':
+        receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
+    elif emission_category == 'BSIV':
+        receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
+    elif emission_category == 'BSV':
+        receiver_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
 
     html_table = df_filtered.to_html(index=False)
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = "🚨 Escalated Incidents (3+ days)"
+    msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
     msg["To"] = receiver_email
 
-    html_body = f"""
+    # Custom email body based on emission category
+    email_body = f"""
     <html>
       <body style="font-family:Arial,sans-serif;">
         <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
         <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
+        <p>Emissions Category: {emission_category}</p>
         {html_table}
         <p>Regards,<br/>ICSS Team</p>
       </body>
     </html>
     """
-    msg.attach(MIMEText(html_body, "html"))
+    msg.attach(MIMEText(email_body, "html"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, app_password)
+            server.login(sender_email, "app_password")  # Use App Password here
             server.sendmail(sender_email, receiver_email, msg.as_string())
             print("Email alert sent successfully.")
     except Exception as e:
@@ -113,7 +125,8 @@ def upload_file():
         if file.filename == '':
             return "No selected file", 400
 
-        month_hint = request.form.get('month_hint', 'default')
+        # This is where the emission category would be selected (future frontend)
+        emission_category = request.form.get('emission_category', 'CPCBII')
 
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
@@ -125,7 +138,7 @@ def upload_file():
             return "Required columns missing", 400
 
         # Format creation date & calculate days
-        fmt = df['Creation Date'].apply(lambda x: format_creation_date(x, month_hint))
+        fmt = df['Creation Date'].apply(lambda x: format_creation_date(x, 'default'))
         df['Creation Date'] = fmt.apply(lambda x: x[0])
         df['Days Elapsed'] = fmt.apply(lambda x: x[1])
 
@@ -149,57 +162,56 @@ def upload_file():
         non_spn = non_spn.sort_values(by='Priority', key=lambda x: x.map(order_map))
 
         out_path = os.path.join(UPLOAD_FOLDER, 'processed_' + file.filename)
-      with pd.ExcelWriter(out_path, engine='xlsxwriter', engine_kwargs={'options': {'nan_inf_to_errors': True}}) as writer:
-    for name, sheet in [('SPN', spn_df), ('Non-SPN', non_spn)]:
-        sheet.fillna('', inplace=True)
-        sheet.to_excel(writer, sheet_name=name, index=False)
-        wb = writer.book
-        ws = writer.sheets[name]
+        with pd.ExcelWriter(out_path, engine='xlsxwriter') as writer:
+            for name, sheet in [('SPN', spn_df), ('Non-SPN', non_spn)]:
+                sheet.fillna('', inplace=True)
+                sheet.to_excel(writer, sheet_name=name, index=False)
+                wb = writer.book
+                ws = writer.sheets[name]
 
-        # Define color formats
-        green = wb.add_format({'bg_color': '#C6EFCE'})      # Green
-        blue = wb.add_format({'bg_color': '#9DC3E6'})       # Blue
-        yellow = wb.add_format({'bg_color': '#FFF2CC'})     # Yellow
-        pink = wb.add_format({'bg_color': '#E4A1C6'})       # Dark Pink
-        red = wb.add_format({'bg_color': '#F4CCCC'})        # Red
-        gray = wb.add_format({'bg_color': '#D9D9D9'})       # Light Gray
+                # Define color formats
+                green = wb.add_format({'bg_color': '#C6EFCE'})      # Green
+                blue = wb.add_format({'bg_color': '#9DC3E6'})       # Blue
+                yellow = wb.add_format({'bg_color': '#FFF2CC'})     # Yellow
+                pink = wb.add_format({'bg_color': '#E4A1C6'})       # Dark Pink
+                red = wb.add_format({'bg_color': '#F4CCCC'})        # Red
+                gray = wb.add_format({'bg_color': '#D9D9D9'})       # Light Gray
 
-        # Get column indices
-        col_idx_id = sheet.columns.get_loc('Incident Id')
-        col_idx_status = sheet.columns.get_loc('Incident Status')
-        col_idx_days = sheet.columns.get_loc('Days Elapsed')
+                # Get column indices
+                col_idx_id = sheet.columns.get_loc('Incident Id')
+                col_idx_status = sheet.columns.get_loc('Incident Status')
+                col_idx_days = sheet.columns.get_loc('Days Elapsed')
 
-        for i, idx in enumerate(sheet.index):
-            status = str(sheet.iat[i, col_idx_status]).strip().lower()
-            days_elapsed = sheet.iat[i, col_idx_days]
+                for i, idx in enumerate(sheet.index):
+                    status = str(sheet.iat[i, col_idx_status]).strip().lower()
+                    days_elapsed = sheet.iat[i, col_idx_days]
 
-            # Determine format
-            cell_format = None
+                    # Determine format
+                    cell_format = None
+                    if status in ['closed', 'completed']:
+                        cell_format = green
+                    elif status in ['open', 'pending']:
+                        if isinstance(days_elapsed, (int, float)):
+                            if days_elapsed == 0:
+                                cell_format = gray
+                            elif days_elapsed == 1:
+                                cell_format = blue
+                            elif days_elapsed == 2:
+                                cell_format = yellow
+                            elif days_elapsed == 3:
+                                cell_format = pink
+                            elif days_elapsed > 3:
+                                cell_format = red
 
-            if status in ['closed', 'completed']:
-                cell_format = green
-            elif status in ['open', 'pending']:
-                if isinstance(days_elapsed, (int, float)):
-                    if days_elapsed == 0:
-                        cell_format = gray
-                    elif days_elapsed == 1:
-                        cell_format = blue
-                    elif days_elapsed == 2:
-                        cell_format = yellow
-                    elif days_elapsed == 3:
-                        cell_format = pink
-                    elif days_elapsed > 3:
-                        cell_format = red
+                    # Apply format to Incident Id cell
+                    if cell_format:
+                        ws.write(i + 1, col_idx_id, sheet.iat[i, col_idx_id], cell_format)
 
-            # Apply format to Incident Id cell
-            if cell_format:
-                ws.write(i + 1, col_idx_id, sheet.iat[i, col_idx_id], cell_format)
-
-        # Alert logic
-        alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
-        alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status']
-        alert_df = alert_df[alert_cols]
-        executor.submit(send_alert_email, alert_df)
+            # Send email for alerts
+            alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
+            alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status']
+            alert_df = alert_df[alert_cols]
+            executor.submit(send_alert_email, alert_df, emission_category)
 
         return send_file(out_path, as_attachment=True)
 
@@ -210,3 +222,4 @@ def upload_file():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
