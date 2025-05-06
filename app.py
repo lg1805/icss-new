@@ -65,7 +65,7 @@ def send_alert_email(df_filtered, emission_category):
         'BSIV': "lakshyarubi.gnana2021@vitstudent.ac.in",
         'BSV': "lakshyarubi.gnana2021@vitstudent.ac.in"
     }.get(emission_category, "lakshyarubi.gnana2021@vitstudent.ac.in")
-    recipients = emission_category_email_map.get(emission_category, []) + ["rubisisters2118@gmail.com"]
+    
     html_table = df_filtered.to_html(index=False)
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
