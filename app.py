@@ -111,7 +111,7 @@ def upload_file():
         if file.filename == '':
             return "No selected file", 400
 
-        emission_category = selected_category  # Use the dropdown value directly
+        emission_category = request.form.get('emission_category')  # Use the dropdown value directly
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
         df = pd.read_excel(filepath)
