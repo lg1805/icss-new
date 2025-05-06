@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ICSS | Complaint Classifier</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="static/favicon.ico" type="image/x-icon" />
   <style>
-   body {
+    body {
       font-family: 'Roboto', sans-serif;
       background-color: #e8f7f1;
       color: #333;
@@ -19,9 +19,9 @@
     .container {
       background: #ffffff;
       border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       padding: 20px;
-      max-width: 100px;
+      max-width: 600px; /* increased container width */
       margin: 0 auto;
       transition: all 0.3s ease-in-out;
     }
@@ -43,7 +43,7 @@
     /* Enhanced styling for tagline */
     .tagline {
       font-size: 22px;
-      font-weight: 250;
+      font-weight: 500;
       font-style: italic;
       color: #34495e;
       margin-bottom: 25px;
@@ -109,15 +109,15 @@
 </head>
 <body>
   <div class="container">
-    <img src="static/logo.png" alt="ICSS Logo">
-    <h1 class="main-title">ICSS</h1>
+    <img src="static/logo.png" alt="ICSS Logo" />
+    <h1 class="main-title">ICSS | Complaint Classifier</h1>
     <h3 class="tagline">Intelligent Complaint Segregation System</h3>
     <p>Upload your complaint Excel sheet and get the processed results.</p>
 
     <form action="/upload" method="post" enctype="multipart/form-data">
       <div class="file-input">
         <label for="complaint_file">Upload Complaint Excel File:</label>
-        <input type="file" name="complaint_file" id="complaint_file" accept=".xlsx" required>
+        <input type="file" name="complaint_file" id="complaint_file" accept=".xlsx" required />
         <small class="file-info">Only .xlsx format is accepted.</small>
       </div>
 
@@ -164,3 +164,4 @@
   </div>
 </body>
 </html>
+
