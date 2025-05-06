@@ -58,7 +58,7 @@ def send_alert_email(df_filtered, emission_category):
         return
 
     sender_email = "lakshyarubi@gmail.com"
-    cc_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
+    cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
     'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
     'CPCBIV+': "sameer.kambli@kirloskar.com",
@@ -111,7 +111,7 @@ def upload_file():
         if file.filename == '':
             return "No selected file", 400
 
-        emission_category = request.form.get('emission_category', 'CPCBII')
+        emission_category = selected_category  # Use the dropdown value directly
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
         df = pd.read_excel(filepath)
@@ -161,7 +161,7 @@ def upload_file():
                     'blue': wb.add_format({'bg_color': '#9DC3E6'}),
                     'yellow': wb.add_format({'bg_color': '#FFF2CC'}),
                     'pink': wb.add_format({'bg_color': '#E4A1C6'}),
-                    'red': wb.add_format({'bg_color': '#F4CCCC'}),
+                    'red': wb.add_format({'bg_color': '#FF0000'}),
                     'gray': wb.add_format({'bg_color': '#D9D9D9'}),
                 }
 
