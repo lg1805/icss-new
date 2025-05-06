@@ -1,130 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ICSS Web App</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #d9f2e6;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-    }
-    img {
-      max-width: 150px;
-      margin: 0 auto 20px;
-      display: block;
-    }
-    h2 {
-      margin: 0 0 10px;
-      font-size: 28px;
-      color: #333;
-    }
-    p.description {
-      margin: 0 0 20px;
-      color: #555;
-    }
-    .form-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      color: #333;
-      font-weight: 500;
-    }
-    .form-group input[type="file"],
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background-color: #007bff;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .error-message { color: red; margin-top: 10px; }
-    .success-message { color: green; margin-top: 10px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICSS | Complaint Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e8f7f1;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            font-weight: 400;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+
+        .file-input, .month-input, .emission-input {
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        input[type="file"], select {
+            padding: 12px 18px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+
+        input[type="file"]:focus, select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .error-message, .success-message {
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        .success-message {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .file-info {
+            font-size: 14px;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            .main-title {
+                font-size: 36px;
+            }
+
+            .tagline {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <img src="{{ url_for('static', filename='images/priority.png') }}" alt="Priority Icon"/>
-    <h2>ICSS for Complaint Classification</h2>
-    <p class="description">Upload your complaint Excel sheet and get the processed results.</p>
+    <div class="container">
+        <img src="static/logo.png" alt="ICSS Logo">
+        <h1 class="main-title">ICSS</h1>
+        <h3 class="tagline">Intelligent Complaint Segregation System</h3>
+        <p>Upload your complaint Excel sheet and get the processed results.</p>
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="complaint_file">Select Complaint File</label>
-        <input type="file" name="complaint_file" id="complaint_file" accept=".xlsx" required/>
-      </div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="file-input">
+                <label for="complaint_file">Upload Complaint Excel File:</label>
+                <input type="file" name="complaint_file" id="complaint_file" accept=".xlsx" required>
+                <small class="file-info">Only .xlsx format is accepted.</small>
+            </div>
 
-      <div class="form-group">
-        <label for="month_hint">Select Month (for date correction)</label>
-        <select name="month_hint" id="month_hint" required>
-          <option value="">-- Select Month --</option>
-          <option value="jan">January</option>
-          <option value="feb">February</option>
-          <option value="mar">March</option>
-          <option value="apr">April</option>
-          <option value="may">May</option>
-          <option value="jun">June</option>
-          <option value="jul">July</option>
-          <option value="aug">August</option>
-          <option value="sep">September</option>
-          <option value="oct">October</option>
-          <option value="nov">November</option>
-          <option value="dec">December</option>
-        </select>
-      </div>
+            <div class="month-input">
+                <label for="month_hint">Select Month (for date correction):</label>
+                <select name="month_hint" id="month_hint" required>
+                    <option value="">--Select Month--</option>
+                    <option value="jan">January</option>
+                    <option value="feb">February</option>
+                    <option value="mar">March</option>
+                    <option value="apr">April</option>
+                    <option value="may">May</option>
+                    <option value="jun">June</option>
+                    <option value="jul">July</option>
+                    <option value="aug">August</option>
+                    <option value="sep">September</option>
+                    <option value="oct">October</option>
+                    <option value="nov">November</option>
+                    <option value="dec">December</option>
+                </select>
+            </div>
 
-      <div class="form-group">
-        <label for="emission_control">Select Emission Control</label>
-        <select name="emission_control" id="emission_control" required>
-          <option value="">-- Select Emission Control --</option>
-          <option value="CPCBII">CPCBII</option>
-          <option value="CPCBIV+">CPCBIV+</option>
-          <option value="BSII">BSII</option>
-          <option value="BSIV">BSIV</option>
-          <option value="BSV">BSV</option>
-        </select>
-      </div>
+            <div class="emission-input">
+                <label for="emission_category">Select Emission Category:</label>
+                <select name="emission_category" id="emission_category" required>
+                    <option value="">--Select Emission Category--</option>
+                    <option value="CPCBII">CPCBII</option>
+                    <option value="CPCBIV+">CPCBIV+</option>
+                    <option value="BSII">BSII</option>
+                    <option value="BSIV">BSIV</option>
+                    <option value="BSV">BSV</option>
+                </select>
+            </div>
 
-      <button type="submit">Process and Download</button>
-    </form>
+            <button type="submit">Process and Download</button>
+        </form>
 
-    {% if error %}
-      <p class="error-message">{{ error }}</p>
-    {% endif %}
-    {% if success_message %}
-      <p class="success-message">{{ success_message }}</p>
-    {% endif %}
-  </div>
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if success_message %}
+            <div class="success-message">{{ success_message }}</div>
+        {% endif %}
+    </div>
 </body>
 </html>
+
 
