@@ -58,26 +58,29 @@ def send_alert_email(df_filtered, emission_category):
         return
 
     sender_email = "lakshyarubi@gmail.com"
+    cc_email = "lakshyarubi.gnana2021@vitstudent.ac.in"
     receiver_email = {
-        'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-        'CPCBIV+': "sameer.kambli@kirloskar.com",
-        'BSII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-        'BSIV': "lakshyarubi.gnana2021@vitstudent.ac.in",
-        'BSV': "lakshyarubi.gnana2021@vitstudent.ac.in"
-    }.get(emission_category, "lakshyarubi.gnana2021@vitstudent.ac.in")
+    'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
+    'CPCBIV+': "sameer.kambli@kirloskar.com",
+    'BSII': "lakshyarubi.gnana2021@vitstudent.ac.in",
+    'BSIV': "lakshyarubi.gnana2021@vitstudent.ac.in",
+    'BSV': "lakshyarubi.gnana2021@vitstudent.ac.in"
+     }.get(emission_category, sender_email)
+
     
     html_table = df_filtered.to_html(index=False)
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
     msg["To"] = receiver_email
+    msg["Cc"] = cc_email
 
     email_body = f"""
     <html>
       <body style="font-family:Arial,sans-serif;">
         <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
         <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
-        email_body += f"<b>Emissions Category:</b> {emission_category}<br><br>"
+        <b>Emissions Category:</b> {emission_category}<br><br>
         {html_table}
         <p>Regards,<br/>ICSS Team</p>
       </body>
@@ -87,8 +90,8 @@ def send_alert_email(df_filtered, emission_category):
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with app password
-            server.sendmail(sender_email, receiver_email, msg.as_string())
+            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with your Gmail app password
+            server.sendmail(sender_email, [receiver_email, cc_email], msg.as_string())
             print("Email alert sent successfully.")
     except Exception as e:
         print(f"Failed to send email: {e}")
@@ -164,14 +167,19 @@ def upload_file():
 
                 col_status = sheet.columns.get_loc('Incident Status')
                 col_days = sheet.columns.get_loc('Days Elapsed')
+                col_incident = sheet.columns.get_loc('Incident Id')
 
                 for i, idx in enumerate(sheet.index):
                     status = str(sheet.iat[i, col_status]).strip().lower()
                     days = sheet.iat[i, col_days]
-                    fmt = None
+
+                    # Green highlight → Incident Status column
                     if status in ['closed', 'completed']:
-                        fmt = colors['green']
-                    elif status in ['open', 'pending'] and isinstance(days, (int, float)):
+                        ws.write(i + 1, col_status, sheet.iat[i, col_status], colors['green'])
+
+                    # Color highlight on Incident Id based on Days Elapsed
+                    if status in ['open', 'pending'] and isinstance(days, (int, float)):
+                        fmt = None
                         if days == 0:
                             fmt = colors['gray']
                         elif days == 1:
@@ -182,14 +190,13 @@ def upload_file():
                             fmt = colors['pink']
                         elif days > 3:
                             fmt = colors['red']
-                    if fmt:
-                        incident_col = sheet.columns.get_loc('Incident Id')
-                        ws.write(i + 1, incident_col, sheet.iat[i, incident_col], fmt)
-
+                        if fmt:
+                            ws.write(i + 1, col_incident, sheet.iat[i, col_incident], fmt)
 
         # Email Alerts
         alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
-        alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status']
+        alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status', 
+                     'Priority']
         alert_df = alert_df[alert_cols]
         executor.submit(send_alert_email, alert_df, emission_category)
 
@@ -202,5 +209,4 @@ def upload_file():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
 
