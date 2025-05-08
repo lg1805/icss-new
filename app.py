@@ -71,7 +71,7 @@ def send_alert_email(df_filtered, emission_category):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
-    msg["To"] = receiver_email
+    msg["To"] = receiver_email if isinstance(receiver_email, str) else ", ".join(receiver_email)
     msg["Bcc"] = cc_email
 
     # Extract unique month and year
@@ -218,7 +218,7 @@ def upload_file():
         alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status', 
                      'Priority']
         alert_df = alert_df[alert_cols]
-        executor.submit(send_alert_email, alert_df, emission_category, from_date, to_date)
+        executor.submit(send_alert_email, alert_df, emission_category)
 
         return send_file(out_path, as_attachment=True)
 
