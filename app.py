@@ -100,7 +100,15 @@ def send_alert_email(df_filtered, emission_category):
       </body>
     </html>
     """
+ msg.attach(MIMEText(email_body, "html"))
 
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with your Gmail app password
+            server.sendmail(sender_email, [receiver_email, cc_email], msg.as_string())
+            print("Email alert sent successfully.")
+    except Exception as e:
+        print(f"Failed to send email: {e}")
 
 # Routes
 @app.route('/')
@@ -210,7 +218,7 @@ def upload_file():
         alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status', 
                      'Priority']
         alert_df = alert_df[alert_cols]
-        executor.submit(send_alert_email, alert_df, emission_category)
+        executor.submit(send_alert_email, alert_df, emission_category, from_date, to_date)
 
         return send_file(out_path, as_attachment=True)
 
