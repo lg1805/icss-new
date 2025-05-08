@@ -36,15 +36,6 @@
       height: auto;
       margin-bottom: 5px;
     }
-    input[type="date"] {
-      padding: 10px 14px;
-      border: 2px solid #3498db;
-      border-radius: 8px;
-      width: 100%;
-      font-size: 14px;
-      display: block;
-      margin-bottom: 15px;
-    }
 
     .main-title {
       font-size: 48px;
@@ -87,6 +78,22 @@
       width: 100%;
       font-size: 14px;
       display: block;
+    }
+
+    input[type="date"] {
+      padding: 10px 14px;
+      border: 2px solid #3498db;
+      border-radius: 8px;
+      width: 48%; /* Set width to fit side by side */
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .date-range-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
     }
 
     button {
@@ -154,11 +161,6 @@
           <option value="dec">December</option>
         </select>
       </div>
-      <label for="from_date">From Date:</label>
-      <input type="date" name="from_date" id="from_date" required>
-
-      <label for="to_date">To Date:</label>
-      <input type="date" name="to_date" id="to_date" required>
 
       <div class="year-input">
         <label for="year_hint">Select Year (for date correction):</label>
@@ -170,17 +172,19 @@
           <option value="2023">2023</option>
           <option value="2024">2024</option>
           <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
-          <option value="2031">2031</option>
-          <option value="2032">2032</option>
-          <option value="2033">2033</option>
-          <option value="2034">2034</option>
-          <option value="2035">2035</option>
         </select>
+      </div>
+
+      <div class="date-range-container">
+        <div class="from-date">
+          <label for="from_date">From Date:</label>
+          <input type="date" name="from_date" id="from_date" required>
+        </div>
+
+        <div class="to-date">
+          <label for="to_date">To Date:</label>
+          <input type="date" name="to_date" id="to_date" required>
+        </div>
       </div>
 
       <div class="emission-input">
@@ -205,5 +209,32 @@
       <div class="success-message">{{ success_message }}</div>
     {% endif %}
   </div>
+
+  <script>
+    const monthSelect = document.getElementById("month_hint");
+    const yearSelect = document.getElementById("year_hint");
+    const fromDateInput = document.getElementById("from_date");
+    const toDateInput = document.getElementById("to_date");
+
+    function updateDateRange() {
+      const month = monthSelect.value;
+      const year = yearSelect.value;
+
+      if (month && year) {
+        const daysInMonth = new Date(year, new Date(`1 ${month} 2023`).getMonth() + 1, 0).getDate();
+        const minDate = `${year}-${("0" + (new Date(`1 ${month} 2023`).getMonth() + 1)).slice(-2)}-01`;
+        const maxDate = `${year}-${("0" + (new Date(`1 ${month} 2023`).getMonth() + 1)).slice(-2)}-${("0" + daysInMonth).slice(-2)}`;
+
+        fromDateInput.setAttribute("min", minDate);
+        fromDateInput.setAttribute("max", maxDate);
+        toDateInput.setAttribute("min", minDate);
+        toDateInput.setAttribute("max", maxDate);
+      }
+    }
+
+    monthSelect.addEventListener("change", updateDateRange);
+    yearSelect.addEventListener("change", updateDateRange);
+  </script>
 </body>
 </html>
+
