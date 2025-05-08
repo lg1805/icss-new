@@ -61,20 +61,21 @@ def send_alert_email(df_filtered, emission_category):
     cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
         'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-        'CPCBIV+': [ "rubisisters2118@gmail.com", "rubisisters2118@gmail.com" ],
+        'CPCBIV+': ["rubisisters2118@gmail.com", "rubisisters2118@gmail.com"],
         'BSII': "amit.kate@kirloskar.com",
         'BSIV': "babalu.patil@kirloskar.com",
         'BSV': "rubisisters2118@gmail.com"
     }.get(emission_category, sender_email)
+
+    # Ensure all values are string type to prevent serialization errors
+    df_filtered = df_filtered.astype(str)
 
     html_table = df_filtered.to_html(index=False)
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
     msg["To"] = receiver_email if isinstance(receiver_email, str) else ", ".join(receiver_email)
-    msg["Bcc"] = cc_email
 
-    # Extract unique month and year
     months = df_filtered['Month'].dropna().unique()
     creation_dates = pd.to_datetime(df_filtered['Creation Date'], dayfirst=True, errors='coerce')
     years = creation_dates.dt.year.dropna().unique()
@@ -93,8 +94,8 @@ def send_alert_email(df_filtered, emission_category):
         <b>Emissions Category:</b> {emission_category}<br>
         <b>Year(s):</b> {year_str}<br>
         <b>Month(s):</b> {month_str}<br>
-        <b>From Date:</b> {from_date.strftime('%d %b %Y') if from_date else 'N/A'}<br>
-        <b>To Date:</b> {to_date.strftime('%d %b %Y') if to_date else 'N/A'}<br><br>
+        <b>From Date:</b> {from_date}<br>
+        <b>To Date:</b> {to_date}<br><br>
         {html_table}
         <p>Regards,<br/>ICSS Team</p>
       </body>
@@ -104,8 +105,10 @@ def send_alert_email(df_filtered, emission_category):
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with your Gmail app password
-            server.sendmail(sender_email, [receiver_email, cc_email], msg.as_string())
+            recipients = [receiver_email] if isinstance(receiver_email, str) else receiver_email
+            recipients += [cc_email]
+            server.login(sender_email, "YOUR_APP_PASSWORD")  # Replace with secure method
+            server.sendmail(sender_email, recipients, msg.as_string())
             print("Email alert sent successfully.")
     except Exception as e:
         print(f"Failed to send email: {e}")
@@ -125,7 +128,7 @@ def upload_file():
         if file.filename == '':
             return "No selected file", 400
 
-        emission_category = request.form.get('emission_category')  # Use the dropdown value directly
+        emission_category = request.form.get('emission_category')
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filepath)
         df = pd.read_excel(filepath)
@@ -134,7 +137,6 @@ def upload_file():
         if not all(col in df.columns for col in required_cols):
             return "Required columns missing", 400
 
-        # Date Formatting
         fmt = df['Creation Date'].apply(lambda x: format_creation_date(x, 'default'))
         df['Creation Date'] = fmt.apply(lambda x: x[0])
         df['Days Elapsed'] = fmt.apply(lambda x: x[1])
@@ -148,7 +150,6 @@ def upload_file():
             df['Month'] = df['Creation_DT'].dt.strftime('%b')
             df.drop(columns=['Creation_DT'], inplace=True)
 
-        # Component Extraction & RPN
         df['Component'] = list(executor.map(extract_component, df['Observation']))
         rpn_vals = list(executor.map(get_rpn_values, df['Component']))
         df[['Severity (S)', 'Occurrence (O)', 'Detection (D)']] = pd.DataFrame(rpn_vals, index=df.index)
@@ -158,7 +159,6 @@ def upload_file():
         if 'Incident Status' not in df.columns:
             return "Required column 'Incident Status' missing", 400
 
-        # Segregation
         spn_df = df[df['Observation'].str.contains('spn', case=False, na=False)]
         non_spn = df[~df['Observation'].str.contains('spn', case=False, na=False)]
 
@@ -166,7 +166,6 @@ def upload_file():
         spn_df = spn_df.sort_values(by='Priority', key=lambda x: x.map(order_map))
         non_spn = non_spn.sort_values(by='Priority', key=lambda x: x.map(order_map))
 
-        # Output Excel
         out_path = os.path.join(UPLOAD_FOLDER, 'processed_' + file.filename)
         with pd.ExcelWriter(out_path, engine='xlsxwriter') as writer:
             for name, sheet in [('SPN', spn_df), ('Non-SPN', non_spn)]:
@@ -175,7 +174,6 @@ def upload_file():
                 wb = writer.book
                 ws = writer.sheets[name]
 
-                # Color formats
                 colors = {
                     'green': wb.add_format({'bg_color': '#C6EFCE'}),
                     'blue': wb.add_format({'bg_color': '#9DC3E6'}),
@@ -192,12 +190,8 @@ def upload_file():
                 for i, idx in enumerate(sheet.index):
                     status = str(sheet.iat[i, col_status]).strip().lower()
                     days = sheet.iat[i, col_days]
-
-                    # Green highlight → Incident Status column
                     if status in ['closed', 'completed']:
                         ws.write(i + 1, col_status, sheet.iat[i, col_status], colors['green'])
-
-                    # Color highlight on Incident Id based on Days Elapsed
                     if status in ['open', 'pending'] and isinstance(days, (int, float)):
                         fmt = None
                         if days == 0:
@@ -213,10 +207,9 @@ def upload_file():
                         if fmt:
                             ws.write(i + 1, col_incident, sheet.iat[i, col_incident], fmt)
 
-        # Email Alerts
         alert_df = df[(df['Incident Status'].str.lower().isin(['open', 'pending'])) & (df['Days Elapsed'] >= 3)]
-        alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no', 'Service Dealer Name', 'Incident Status', 
-                     'Priority']
+        alert_cols = ['Incident Id', 'Creation Date', 'Month', 'Days Elapsed', 'Observation', 'Engine no',
+                      'Service Dealer Name', 'Incident Status', 'Priority']
         alert_df = alert_df[alert_cols]
         executor.submit(send_alert_email, alert_df, emission_category)
 
@@ -229,4 +222,3 @@ def upload_file():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
