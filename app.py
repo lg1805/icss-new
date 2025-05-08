@@ -100,7 +100,7 @@ def send_alert_email(df_filtered, emission_category):
       </body>
     </html>
     """
- msg.attach(MIMEText(email_body, "html"))
+    msg.attach(MIMEText(email_body, "html"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
