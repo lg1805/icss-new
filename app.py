@@ -135,8 +135,14 @@ def upload_file():
         df['Creation Date'] = fmt.apply(lambda x: x[0])
         df['Days Elapsed'] = fmt.apply(lambda x: x[1])
         df['Creation_DT'] = pd.to_datetime(df['Creation Date'], dayfirst=True, errors='coerce')
-        df['Month'] = df['Creation_DT'].dt.strftime('%b')
-        df.drop(columns=['Creation_DT'], inplace=True)
+        from_date_str = request.form.get('from_date')
+        to_date_str = request.form.get('to_date')
+        if from_date_str and to_date_str:
+            from_date = pd.to_datetime(from_date_str, errors='coerce')
+            to_date = pd.to_datetime(to_date_str, errors='coerce')
+            df = df[(df['Creation_DT'] >= from_date) & (df['Creation_DT'] <= to_date)]
+            df['Month'] = df['Creation_DT'].dt.strftime('%b')
+            df.drop(columns=['Creation_DT'], inplace=True)
 
         # Component Extraction & RPN
         df['Component'] = list(executor.map(extract_component, df['Observation']))
