@@ -82,29 +82,24 @@ def send_alert_email(df_filtered, emission_category):
     month_str = ", ".join(months)
     year_str = ", ".join(map(str, years))
 
-    email_body = f"""
-    <html>
-      <body style="font-family:Arial,sans-serif;">
-        <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
-        <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
-        <b>Emissions Category:</b> {emission_category}<br>
-        <b>Month(s):</b> {month_str}<br>
-        <b>Year(s):</b> {year_str}<br><br>
-        {html_table}
-        <p>Regards,<br/>ICSS Team</p>
-      </body>
-    </html>
-    """
-    msg.attach(MIMEText(email_body, "html"))
+  from_date = df_filtered['Creation Date'].min() if not df_filtered.empty else None
+to_date = df_filtered['Creation Date'].max() if not df_filtered.empty else None
 
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with your Gmail app password
-            server.sendmail(sender_email, [receiver_email, cc_email], msg.as_string())
-            print("Email alert sent successfully.")
-    except Exception as e:
-        print(f"Failed to send email: {e}")
-
+email_body = f"""
+<html>
+  <body style="font-family:Arial,sans-serif;">
+    <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
+    <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
+    <b>Emissions Category:</b> {emission_category}<br>
+    <b>Year(s):</b> {year_str}<br>
+    <b>Month(s):</b> {month_str}<br>
+    <b>From Date:</b> {from_date.strftime('%d %b %Y') if from_date else 'N/A'}<br>
+    <b>To Date:</b> {to_date.strftime('%d %b %Y') if to_date else 'N/A'}<br><br>
+    {html_table}
+    <p>Regards,<br/>ICSS Team</p>
+  </body>
+</html>
+"""
 
 # Routes
 @app.route('/')
