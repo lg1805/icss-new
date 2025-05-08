@@ -60,14 +60,13 @@ def send_alert_email(df_filtered, emission_category):
     sender_email = "lakshyarubi@gmail.com"
     cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
-    'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-    'CPCBIV+': [ "sameer.kambli@kirloskar.com", "ravi.kamble@kirloskar.com" ],
-    'BSII': "amit.kate@kirloskar.com",
-    'BSIV': "babalu.patil@kirloskar.com" ,
-    'BSV': "venkatesh.naik@kirloskar.com"
-     }.get(emission_category, sender_email)
+        'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
+        'CPCBIV+': [ "sameer.kambli@kirloskar.com", "ravi.kamble@kirloskar.com" ],
+        'BSII': "amit.kate@kirloskar.com",
+        'BSIV': "babalu.patil@kirloskar.com",
+        'BSV': "venkatesh.naik@kirloskar.com"
+    }.get(emission_category, sender_email)
 
-    
     html_table = df_filtered.to_html(index=False)
     msg = MIMEMultipart("alternative")
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
@@ -75,12 +74,22 @@ def send_alert_email(df_filtered, emission_category):
     msg["To"] = receiver_email
     msg["Bcc"] = cc_email
 
+    # Extract unique month and year
+    months = df_filtered['Month'].dropna().unique()
+    creation_dates = pd.to_datetime(df_filtered['Creation Date'], dayfirst=True, errors='coerce')
+    years = creation_dates.dt.year.dropna().unique()
+
+    month_str = ", ".join(months)
+    year_str = ", ".join(map(str, years))
+
     email_body = f"""
     <html>
       <body style="font-family:Arial,sans-serif;">
         <h3>🚨 Open & Pending Incidents Escalated ≥ 3 Days</h3>
         <p>Generated: {datetime.now().strftime('%d %b %Y, %H:%M:%S')}</p>
-        <b>Emissions Category:</b> {emission_category}<br><br>
+        <b>Emissions Category:</b> {emission_category}<br>
+        <b>Month(s):</b> {month_str}<br>
+        <b>Year(s):</b> {year_str}<br><br>
         {html_table}
         <p>Regards,<br/>ICSS Team</p>
       </body>
@@ -95,6 +104,7 @@ def send_alert_email(df_filtered, emission_category):
             print("Email alert sent successfully.")
     except Exception as e:
         print(f"Failed to send email: {e}")
+
 
 # Routes
 @app.route('/')
