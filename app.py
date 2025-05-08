@@ -64,7 +64,7 @@ def send_alert_email(df_filtered, emission_category):
     'CPCBIV+': [ "sameer.kambli@kirloskar.com", "ravi.kamble@kirloskar.com" ],
     'BSII': "amit.kate@kirloskar.com",
     'BSIII' : "amit.kate@kirloskar.com"
-    'BSIV': "babalu.patil@kirloskar.com",
+    'BSIV': "babalu.patil@kirloskar.com,
     'BSV': "venkatesh.naik@kirloskar.com"
      }.get(emission_category, sender_email)
 
