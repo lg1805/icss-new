@@ -61,10 +61,11 @@ def send_alert_email(df_filtered, emission_category):
     cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
     'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-    'CPCBIV+': "sameer.kambli@kirloskar.com",
-    'BSII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-    'BSIV': "lakshyarubi.gnana2021@vitstudent.ac.in",
-    'BSV': "lakshyarubi.gnana2021@vitstudent.ac.in"
+    'CPCBIV+': [ "sameer.kambli@kirloskar.com", "ravi.kamble@kirloskar.com" ],
+    'BSII': "amit.kate@kirloskar.com",
+    'BSIII' : "amit.kate@kirloskar.com"
+    'BSIV': "babalu.patil@kirloskar.com",
+    'BSV': "venkatesh.naik@kirloskar.com"
      }.get(emission_category, sender_email)
 
     
@@ -73,7 +74,7 @@ def send_alert_email(df_filtered, emission_category):
     msg["Subject"] = "🚨 OPEN Incidents (3+ days)"
     msg["From"] = sender_email
     msg["To"] = receiver_email
-    msg["Cc"] = cc_email
+    msg["Bcc"] = cc_email
 
     email_body = f"""
     <html>
