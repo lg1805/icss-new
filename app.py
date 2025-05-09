@@ -60,11 +60,11 @@ def send_alert_email(df_filtered, emission_category):
     sender_email = "lakshyarubi@gmail.com"
     cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
-        'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
-        'CPCBIV+': ["rubisisters2118@gmail.com", "rubisisters2118@gmail.com"],
+        'CPCBII': ["gopichand.raut@kirloskar.com", "shrikant.sutar@kirloskar.com", "srideep.mitra@kirloskar.com", "umesh.more@kirloskar.com"],
+        'CPCBIV+': ["ravi.kamble@kirloskar.com", "sameer.kambli@kirloskar.com"],
         'BSII': "amit.kate@kirloskar.com",
         'BSIV': "babalu.patil@kirloskar.com",
-        'BSV': "rubisisters2118@gmail.com"
+        'BSV': "venkatesh.naik@kirloskar.com"
     }.get(emission_category, sender_email)
 
     # Ensure all values are string type to prevent serialization errors
