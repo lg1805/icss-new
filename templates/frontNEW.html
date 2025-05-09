@@ -84,17 +84,20 @@
       padding: 10px 14px;
       border: 2px solid #3498db;
       border-radius: 8px;
-      width: 48%; /* Set width to fit side by side */
-      font-size: 14px;
-      display: inline-block;
-      margin-bottom: 15px;
+      width: 100%; /* Full width within its container */
+      font-size: 16px;
+      display: block;
+      margin-bottom: 10px;
     }
 
     .date-range-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+     display: flex;
+     gap: 20px;
+     }
+
+     .from-date, .to-date {
+      flex: 1;
+      }
 
     button {
       background-color: #3498db;
