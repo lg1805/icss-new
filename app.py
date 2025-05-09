@@ -64,7 +64,7 @@ def send_alert_email(df_filtered, emission_category):
         'CPCBIV+': ["ravi.kamble@kirloskar.com", "sameer.kambli@kirloskar.com"],
         'BSII': "amit.kate@kirloskar.com",
         'BSIV': "babalu.patil@kirloskar.com",
-        'BSV': "venkatesh.naik@kirloskar.com"
+        'BSV': "lakshyarubi.gnana2021@vitstudent.ac.in"
     }.get(emission_category, sender_email)
 
     # Ensure all values are string type to prevent serialization errors
