@@ -107,7 +107,7 @@ def send_alert_email(df_filtered, emission_category):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             recipients = [receiver_email] if isinstance(receiver_email, str) else receiver_email
             recipients += [cc_email]
-            server.login(sender_email, "YOUR_APP_PASSWORD")  # Replace with secure method
+            server.login(sender_email, "selr fdih wlkm wufg")  # Replace with secure method
             server.sendmail(sender_email, recipients, msg.as_string())
             print("Email alert sent successfully.")
     except Exception as e:
