@@ -60,7 +60,7 @@ def send_alert_email(df_filtered, emission_category):
     sender_email = "lakshyarubi@gmail.com"
     cc_email = "rubisisters2118@gmail.com"
     receiver_email = {
-        'CPCBII': ["gopichand.raut@kirloskar.com", "shrikant.sutar@kirloskar.com", "srideep.mitra@kirloskar.com", "umesh.more@kirloskar.com"],
+        'CPCBII': "lakshyarubi.gnana2021@vitstudent.ac.in",
         'CPCBIV+': ["ravi.kamble@kirloskar.com", "sameer.kambli@kirloskar.com"],
         'BSII': "amit.kate@kirloskar.com",
         'BSIV': "babalu.patil@kirloskar.com",
